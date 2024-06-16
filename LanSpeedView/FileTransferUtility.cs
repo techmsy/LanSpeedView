@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Configuration;
 
-
 public static class FileTransferUtility
 {
     public static async Task TransferAndLog(string sharePath, string logFilePath, int fileSizeMB)
@@ -11,6 +10,7 @@ public static class FileTransferUtility
 
         Stopwatch stopwatch = new Stopwatch();
 
+        double uploadTimeSeconds = 0, downloadTimeSeconds = 0, uploadSpeedMbps = 0, downloadSpeedMbps = 0;
         string remoteFilePath = Path.Combine(sharePath, Path.GetFileName(Path.GetTempFileName()));
         string currentPath = Directory.GetCurrentDirectory();
 
@@ -19,7 +19,12 @@ public static class FileTransferUtility
 
         try
         {
-            double uploadTimeSeconds = 0, downloadTimeSeconds = 0, uploadSpeedMbps = 0, downloadSpeedMbps = 0;
+            var overview = $"--------------------------------------------------\n" +
+                    $"Date               : {DateTime.Now}\n" +
+                    $"File Size          : {fileSizeMB} MB\n" +
+                    $"Source Folder      : {currentPath}\n" +
+                    $"Target Folder      : {sharePath}\n";
+            Console.Write($"Process Start: {DateTime.Now}\n{overview}");
 
             for (var i = 1; i <= iMax; i++) 
             {
@@ -43,22 +48,18 @@ public static class FileTransferUtility
             var uploadSpeedMbpsAve = Math.Round(uploadSpeedMbps / iMax,1);
             var downloadSpeedMbpsAve = Math.Round(downloadSpeedMbps / iMax,1);
 
-            string results = $"--------------------------------------------------\n" +
-                    $"Date               : {DateTime.Now}\n" +
-                    $"File Size          : {fileSizeMB} MB\n" +
-                    $"Source Folder      : {currentPath}\n" +
-                    $"Target Folder      : {sharePath}\n" +
-                    $"  {iMax} Times Average is \n" +
-                    $"Upload(Write) Time : {uploadTimeSecondsAve} Sec\n" +
-                    $"Download(Read) Time: {downloadTimeSecondsAve} Sec\n" +
-                    $"Upload Speed       : {uploadSpeedMbpsAve} Mbps\n" +
-                    $"Download Speed     : {downloadSpeedMbpsAve} Mbps\n" +
-                    $"\n";
+            var results = $"  {iMax} Times Average is \n" +
+                        $"Upload(Write) Time : {uploadTimeSecondsAve} Sec\n" +
+                        $"Download(Read) Time: {downloadTimeSecondsAve} Sec\n" +
+                        $"Upload Speed       : {uploadSpeedMbpsAve} Mbps\n" +
+                        $"Download Speed     : {downloadSpeedMbpsAve} Mbps\n";
 
-            Logger.LogTransferResult(logFilePath, results);
+            Logger.LogTransferResult(logFilePath, overview + results);
 
             // Console.WriteLine("Transfer complete. Check the log file for details.");
-            Console.WriteLine($"{results}");
+            Console.Write($"{results}");
+            Console.WriteLine($"--------------------------------------------------");
+            Console.WriteLine($"Process End: {DateTime.Now}\n");
 
         }
         catch (Exception ex)

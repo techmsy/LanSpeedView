@@ -6,7 +6,7 @@ namespace FileTransferApp
     {
         static async Task Main(string[] args)
         {
-            // コマンドライン引数の処理
+            // コマンドライン引数処理
             if (args.Length < 1)
             {
                 Console.WriteLine("Usage: LanSpeedView <sharePath> [-S <fileSizeMB>]");
@@ -14,7 +14,7 @@ namespace FileTransferApp
             }
 
             string sharePath = args[0];
-            // デフォルトファイルサイズ取得
+            // ファイルサイズデフォルト取得
             bool result = int.TryParse(ConfigurationManager.AppSettings["defaultFileSizeMB"], out int fileSizeMB);
             if (!result) return;
 
@@ -26,7 +26,7 @@ namespace FileTransferApp
                 }
             }
 
-            // ログファイル名を設定ファイルから読み取る
+            // 設定ファイルからログファイル名取得
             string logFilePath = ConfigurationManager.AppSettings["LogFilePath"] ?? "log.txt";
 
             // ファイル転送とログ記録の実行
