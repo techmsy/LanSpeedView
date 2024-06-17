@@ -3,7 +3,7 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net4.8.1</TargetFramework>
+    <TargetFramework>net4.7</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
