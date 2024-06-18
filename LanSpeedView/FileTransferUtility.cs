@@ -49,10 +49,10 @@ public static class FileTransferUtility
             var downloadSpeedMbpsAve = Math.Round(downloadSpeedMbps / iMax,1);
 
             var results = $"  {iMax} Times Average is \n" +
-                        $"Upload(Write) Time : {uploadTimeSecondsAve} Sec\n" +
                         $"Download(Read) Time: {downloadTimeSecondsAve} Sec\n" +
-                        $"Upload Speed       : {uploadSpeedMbpsAve} Mbps\n" +
-                        $"Download Speed     : {downloadSpeedMbpsAve} Mbps\n";
+                        $"Upload(Write) Time : {uploadTimeSecondsAve} Sec\n" +
+                        $"Download Speed     : {downloadSpeedMbpsAve} Mbps\n" +
+                        $"Upload Speed       : {uploadSpeedMbpsAve} Mbps\n";
 
             Logger.LogTransferResult(logFilePath, overview + results);
 
