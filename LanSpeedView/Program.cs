@@ -6,9 +6,12 @@ namespace FileTransferApp
     {
         static async Task Main(string[] args)
         {
+            var _myVersion = "LanSpeedView Ver 0.01";
+
             // コマンドライン引数処理
             if (args.Length < 1)
             {
+                Console.WriteLine($"{_myVersion}");
                 Console.WriteLine("Usage: LanSpeedView <sharePath> [-S <fileSizeMB>]");
                 return;
             }

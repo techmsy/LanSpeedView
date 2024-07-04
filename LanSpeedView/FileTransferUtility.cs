@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Configuration;
+using System.Net;
+using System.Xml;
 
 public static class FileTransferUtility
 {
@@ -17,10 +19,23 @@ public static class FileTransferUtility
         bool result = int.TryParse(ConfigurationManager.AppSettings["loopCount"], out int iMax);
         if (!result) return;
 
+        var hostname = Dns.GetHostName();
+        IPAddress[] adrList = Dns.GetHostAddresses(hostname);
+
+        string address2 = "";
+        foreach (IPAddress address in adrList)
+        {
+            Console.WriteLine(address.ToString());
+            address2 = address2 + Environment.NewLine + "                     " + address.ToString();
+        }
+
+
         try
         {
             var overview = $"--------------------------------------------------\n" +
                     $"Date               : {DateTime.Now}\n" +
+                    $"HostName           : {hostname}\n" +
+                    $"IPAddress          : {address2}\n" +
                     $"File Size          : {fileSizeMB} MB\n" +
                     $"Source Folder      : {currentPath}\n" +
                     $"Target Folder      : {sharePath}\n";
