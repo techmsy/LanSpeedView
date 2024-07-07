@@ -1,11 +1,10 @@
 using System.Diagnostics;
 using System.Configuration;
 using System.Net;
-using System.Xml;
 
 public static class FileTransferUtility
 {
-    public static async Task TransferAndLog(string sharePath, string logFilePath, int fileSizeMB)
+    public static async Task<String> TransferAndLog(string sharePath, string logFilePath, int fileSizeMB)
     {
         byte[] data = new byte[fileSizeMB * 1024 * 1024];
         new Random().NextBytes(data);
@@ -17,25 +16,33 @@ public static class FileTransferUtility
         string currentPath = Directory.GetCurrentDirectory();
 
         bool result = int.TryParse(ConfigurationManager.AppSettings["loopCount"], out int iMax);
-        if (!result) return;
+        if (!result) return "1";
 
         var hostname = Dns.GetHostName();
         IPAddress[] adrList = Dns.GetHostAddresses(hostname);
 
-        string address2 = "";
+        var idx = 0;
+        var adr = "";
         foreach (IPAddress address in adrList)
         {
-            Console.WriteLine(address.ToString());
-            address2 = address2 + Environment.NewLine + "                     " + address.ToString();
+            if (idx == 0) 
+            {
+                adr = address.ToString();
+            }
+            else
+            {
+                var spc = "                     ";
+                adr = adr + Environment.NewLine + spc + address.ToString();
+            }
+            idx++;
         }
-
 
         try
         {
             var overview = $"--------------------------------------------------\n" +
                     $"Date               : {DateTime.Now}\n" +
                     $"HostName           : {hostname}\n" +
-                    $"IPAddress          : {address2}\n" +
+                    $"IPAddress          : {adr}\n" +
                     $"File Size          : {fileSizeMB} MB\n" +
                     $"Source Folder      : {currentPath}\n" +
                     $"Target Folder      : {sharePath}\n";
@@ -69,17 +76,17 @@ public static class FileTransferUtility
                         $"Download Speed     : {downloadSpeedMbpsAve} Mbps\n" +
                         $"Upload Speed       : {uploadSpeedMbpsAve} Mbps\n";
 
-            Logger.LogTransferResult(logFilePath, overview + results);
-
             // Console.WriteLine("Transfer complete. Check the log file for details.");
             Console.Write($"{results}");
             Console.WriteLine($"--------------------------------------------------");
             Console.WriteLine($"Process End: {DateTime.Now}\n");
 
+            return overview + results;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
+            return "1";
         }
         finally
         {
