@@ -15,7 +15,7 @@ namespace FileTransferApp
             if (args.Length < 1)
             {
                 Console.WriteLine($"{Title} {Version}");
-                Console.WriteLine("Usage: LanSpeedView <sharePath> [-s <fileSizeMB>] [-savelog] ");
+                Console.WriteLine("Usage: LanSpeedView <sharePath> [-s <fileSizeMB>] [-savelog]");
                 return;
             }
 

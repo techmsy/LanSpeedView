@@ -3,7 +3,7 @@ LanSpeedView is a tool to measure LAN network speed by copy speed to/from shared
 
 ## Usage
 ```
-> LanSpeedView <sharePath> [-S <fileSizeMB>]
+> LanSpeedView <sharePath> [-s <fileSizeMB>] [-savelog]
 ```
 
 ## Option
@@ -19,8 +19,8 @@ Edit LanSpeedView.exe.config
   </appSettings>
 </configuration>
 ```
-LogFilePath as Default
+LogFilePath as Default Path
 
-defaultFileSizeMB as Default
+defaultFileSizeMB as Default Size
 
 loopCount : Specify the number of loop times
