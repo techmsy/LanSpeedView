@@ -1,6 +1,9 @@
+using System;
 using System.Diagnostics;
 using System.Configuration;
 using System.Net;
+using System.IO;
+using System.Threading.Tasks;
 
 public static class FileTransferUtility
 {
@@ -61,24 +64,31 @@ public static class FileTransferUtility
                     Console.SetCursorPosition(progressLeft, Console.CursorTop);
                     Console.Write(new string('.', i % 10)); // ドットを表示
                     Console.SetCursorPosition(progressLeft + 10, Console.CursorTop);
-                    Console.Write($"{i}/{iMax}");
+                    Console.Write($"{i}/{iMax} ({i * 100 / iMax}%)");
                 }
                 catch (IOException)
                 {
                     // コンソールのカーソル位置設定に失敗した場合の処理
-                    Console.WriteLine($"Progress: {i}/{iMax}");
+                    Console.WriteLine($"Progress: {i}/{iMax} ({i * 100 / iMax}%)");
                 }
 
                 // Upload
                 stopwatch.Start();
-                await Task.Run(() => File.WriteAllBytes(remoteFilePath, data));
+                using (FileStream fs = new FileStream(remoteFilePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true))
+                {
+                    await fs.WriteAsync(data, 0, data.Length);
+                }
                 stopwatch.Stop();
                 uploadTimeSeconds += stopwatch.Elapsed.TotalSeconds;
                 uploadSpeedMbps += (fileSizeMB * 8) / uploadTimeSeconds;
 
                 // Download
                 stopwatch.Restart();
-                await Task.Run(() => File.ReadAllBytes(remoteFilePath));
+                using (FileStream fs = new FileStream(remoteFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true))
+                {
+                    byte[] buffer = new byte[data.Length];
+                    await fs.ReadAsync(buffer, 0, buffer.Length);
+                }
                 stopwatch.Stop();
                 downloadTimeSeconds += stopwatch.Elapsed.TotalSeconds;
                 downloadSpeedMbps += (fileSizeMB * 8) / downloadTimeSeconds;
@@ -89,11 +99,11 @@ public static class FileTransferUtility
             var uploadSpeedMbpsAve = Math.Round(uploadSpeedMbps / iMax, 1);
             var downloadSpeedMbpsAve = Math.Round(downloadSpeedMbps / iMax, 1);
 
-            var results = $"\n" +
-                          $"Download(Read) Time: {downloadTimeSecondsAve} Sec\n" +
-                          $"Upload(Write) Time : {uploadTimeSecondsAve} Sec\n" +
-                          $"Download Speed     : {downloadSpeedMbpsAve} Mbps\n" +
-                          $"Upload Speed       : {uploadSpeedMbpsAve} Mbps\n";
+            var results = $"\n\n" +
+                          $"Download Time(Read) : {downloadTimeSecondsAve} Sec\n" +
+                          $"Upload Time(Write)  : {uploadTimeSecondsAve} Sec\n" +
+                          $"Download Speed(Read): {downloadSpeedMbpsAve} Mbps\n" +
+                          $"Upload Speed(Write) : {uploadSpeedMbpsAve} Mbps\n";
 
             Console.Write($"{results}");
             Console.WriteLine($"--------------------------------------------------");
