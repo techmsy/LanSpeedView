@@ -37,7 +37,7 @@ namespace FileTransferApp
             }
 
             // 設定ファイルからログファイル名取得
-            string logFilePath = ConfigurationManager.AppSettings["LogFilePath"] ?? "log.txt";
+            string logFilePath = ConfigurationManager.AppSettings["logFilePath"] ?? "log.txt";
 
             var logText = "";
             // ファイル転送の実行
