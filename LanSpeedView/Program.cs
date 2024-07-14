@@ -5,7 +5,7 @@ namespace FileTransferApp
     class Program
     {
         const string Title = "LanSpeedView";
-        const string Version = "0.02";
+        const string Version = "0.03";
 
         static async Task Main(string[] args)
         {

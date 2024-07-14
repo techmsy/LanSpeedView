@@ -9,7 +9,7 @@ LanSpeedView is a tool to measure LAN network speed by copy speed to/from shared
 ## Option
 Edit LanSpeedView.exe.config
 
-```json
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <appSettings>

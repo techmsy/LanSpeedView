@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 public static class FileTransferUtility
 {
+     private const int SpaceLength = 21;  // スペース用空文字
     public static async Task<string> TransferAndLog(string sharePath, string logFilePath, int fileSizeMB)
     {
         byte[] data = new byte[fileSizeMB * 1024 * 1024];
@@ -34,7 +35,7 @@ public static class FileTransferUtility
             }
             else
             {
-                var spc = "                     ";
+                var spc = new string(' ', SpaceLength);
                 adr = adr + Environment.NewLine + spc + address.ToString();
             }
             idx++;
@@ -54,22 +55,14 @@ public static class FileTransferUtility
 
             // インジケーターの初期表示
             Console.Write("Progress: ");
-            int progressLeft = Console.CursorLeft;
 
             for (var i = 1; i <= iMax; i++)
             {
                 // インジケーターの更新
-                try
+                Console.Write(".");
+                if (i % 10 == 0 || i == iMax)
                 {
-                    Console.SetCursorPosition(progressLeft, Console.CursorTop);
-                    Console.Write(new string('.', i % 10)); // ドットを表示
-                    Console.SetCursorPosition(progressLeft + 10, Console.CursorTop);
-                    Console.Write($"{i}/{iMax} ({i * 100 / iMax}%)");
-                }
-                catch (IOException)
-                {
-                    // コンソールのカーソル位置設定に失敗した場合の処理
-                    Console.WriteLine($"Progress: {i}/{iMax} ({i * 100 / iMax}%)");
+                    Console.WriteLine($" {i}/{iMax} ({i * 100 / iMax}%)");
                 }
 
                 // Upload
@@ -99,7 +92,7 @@ public static class FileTransferUtility
             var uploadSpeedMbpsAve = Math.Round(uploadSpeedMbps / iMax, 1);
             var downloadSpeedMbpsAve = Math.Round(downloadSpeedMbps / iMax, 1);
 
-            var results = $"\n\n" +
+            var results = $"\n" +
                           $"Download Time(Read) : {downloadTimeSecondsAve} Sec\n" +
                           $"Upload Time(Write)  : {uploadTimeSecondsAve} Sec\n" +
                           $"Download Speed(Read): {downloadSpeedMbpsAve} Mbps\n" +
