@@ -15,7 +15,7 @@ public static class FileTransferUtility
 
         Stopwatch stopwatch = new Stopwatch();
 
-        double uploadTimeSeconds = 0, downloadTimeSeconds = 0, uploadSpeedMbps = 0, downloadSpeedMbps = 0;
+        double uploadTimeSecTotal = 0, downloadTimeSecTotal = 0;
         string remoteFilePath = Path.Combine(sharePath, Path.GetFileName(Path.GetTempFileName()));
         string currentPath = Directory.GetCurrentDirectory();
 
@@ -66,14 +66,13 @@ public static class FileTransferUtility
                 }
 
                 // Upload
-                stopwatch.Start();
+                stopwatch.Restart();
                 using (FileStream fs = new FileStream(remoteFilePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true))
                 {
                     await fs.WriteAsync(data, 0, data.Length);
                 }
                 stopwatch.Stop();
-                uploadTimeSeconds += stopwatch.Elapsed.TotalSeconds;
-                uploadSpeedMbps += (fileSizeMB * 8) / uploadTimeSeconds;
+                uploadTimeSecTotal += stopwatch.Elapsed.TotalSeconds;
 
                 // Download
                 stopwatch.Restart();
@@ -83,14 +82,13 @@ public static class FileTransferUtility
                     await fs.ReadAsync(buffer, 0, buffer.Length);
                 }
                 stopwatch.Stop();
-                downloadTimeSeconds += stopwatch.Elapsed.TotalSeconds;
-                downloadSpeedMbps += (fileSizeMB * 8) / downloadTimeSeconds;
+                downloadTimeSecTotal += stopwatch.Elapsed.TotalSeconds;                
             }
-
-            var uploadTimeSecondsAve = Math.Round(uploadTimeSeconds / iMax, 2);
-            var downloadTimeSecondsAve = Math.Round(downloadTimeSeconds / iMax, 2);
-            var uploadSpeedMbpsAve = Math.Round(uploadSpeedMbps / iMax, 1);
-            var downloadSpeedMbpsAve = Math.Round(downloadSpeedMbps / iMax, 1);
+            
+            var uploadTimeSecondsAve = Math.Round(uploadTimeSecTotal / iMax, 2);
+            var downloadTimeSecondsAve = Math.Round(downloadTimeSecTotal / iMax, 2);
+            var uploadSpeedMbpsAve = Math.Round((fileSizeMB * 8) / uploadTimeSecondsAve, 1);
+            var downloadSpeedMbpsAve = Math.Round((fileSizeMB * 8) / downloadTimeSecondsAve, 1);
 
             var results = $"\n" +
                           $"Download Time(Read) : {downloadTimeSecondsAve} Sec\n" +
