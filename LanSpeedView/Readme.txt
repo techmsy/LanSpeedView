@@ -1,14 +1,12 @@
-¡ƒvƒƒOƒ‰ƒ€
+ï»¿â– ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
 
   LanSpeedView
 
-
-¡ƒvƒƒOƒ‰ƒ€‚Ì‹@”\
+â– ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®æ©Ÿèƒ½
 
   LanSpeedView is a tool to measure LAN network speed by copy speed to/from shared folders.
 
-
-¡g—p•û–@
+â– ä½¿ç”¨æ–¹æ³•
 
   LanSpeedView <sharePath> [-s <fileSizeMB>] [-savelog]
 
@@ -16,16 +14,13 @@
 
   LanSpeedView <sharePath> [-size <fileSizeMB>] [--savelog] [-mode <max>]
                                                                    max, min, ave...default
-
-
-¡‹Lq—á
+â– è¨˜è¿°ä¾‹
 xxx
   doMail.vbs /E:29 /S:c:\test\nyuko.txt /D:c:\test\conv_nyuko.txt /L:Config_doMail_Label_test.vbs
 xxx
 
-
-¡ƒIƒvƒVƒ‡ƒ“
-¡İ’èƒtƒ@ƒCƒ‹
+â– ã‚ªãƒ—ã‚·ãƒ§ãƒ³
+â– è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 
 Edit LanSpeedView.exe.config
 
@@ -45,21 +40,20 @@ defaultFileSizeMB ... Default CopiedFile Size
 
 loopCount ... Number of Loop Times
 
+â– æ”¹ç‰ˆå±¥æ­´
 
-¡‰ü”Å—š—ğ
+â—Ver.0.04 (2024/8/22) techmsy
 
-Ver.0.04 (2024/8/22) t
+	ä¿®æ­£
 
-	C³
+â—Ver.0.01 (2024/*/*) techmsy
 
-Ver.0.01 (2024/*/*) t
+	ä¿®æ­£
 
-	C³
+â—Ver.0.02 (2024/*/*) techmsy
 
-Ver.0.02 (2024/*/*) t
+	ä¿®æ­£
 
-	C³
+â—Ver.0.01 (2024/*/*) techmsy
 
-Ver.0.01 (2024/*/*) t
-
-	‰”Å
+	åˆç‰ˆ

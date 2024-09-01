@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 public static class FileTransferUtility
 {
-     private const int SpaceLength = 21;  // スペース用空文字
+     private const int spaceChr = 21;  // スペース用空文字
     public static async Task<string> TransferAndLog(string sharePath, string logFilePath, int fileSizeMB)
     {
         byte[] data = new byte[fileSizeMB * 1024 * 1024];
@@ -35,7 +35,7 @@ public static class FileTransferUtility
             }
             else
             {
-                var spc = new string(' ', SpaceLength);
+                var spc = new string(' ', spaceChr);
                 adr = adr + Environment.NewLine + spc + address.ToString();
             }
             idx++;

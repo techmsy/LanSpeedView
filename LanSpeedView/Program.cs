@@ -9,7 +9,7 @@ namespace FileTransferApp
 
         static async Task Main(string[] args)
         {
-            var isLoged = false;
+            var isRecordLog = false;
 
             // コマンドライン引数処理
             if (args.Length < 1)
@@ -32,7 +32,7 @@ namespace FileTransferApp
                 }
                 if (args[i] == "-savelog")
                 {
-                    isLoged = true;
+                    isRecordLog = true;
                 }
             }
 
@@ -43,7 +43,7 @@ namespace FileTransferApp
             // ファイル転送の実行
             logText = await FileTransferUtility.TransferAndLog(sharePath, logFilePath, fileSizeMB);
 
-            if (isLoged)
+            if (isRecordLog)
             {
                 // ログ書き出し
                 Logger.LogTransferResult(logFilePath, logText);
