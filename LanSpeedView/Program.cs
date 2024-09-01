@@ -5,7 +5,7 @@ namespace FileTransferApp
     class Program
     {
         const string Title = "LanSpeedView";
-        const string Version = "0.04";
+        const string Version = "0.05";
 
         static async Task Main(string[] args)
         {
@@ -15,7 +15,7 @@ namespace FileTransferApp
             if (args.Length < 1)
             {
                 Console.WriteLine($"{Title} {Version}");
-                Console.WriteLine("Usage: LanSpeedView <sharePath> [-s <fileSizeMB>] [-savelog]");
+                Console.WriteLine("Usage: LanSpeedView <sharePath> [-s <fileSizeMB>] [--savelog]");
                 return;
             }
 
@@ -30,7 +30,7 @@ namespace FileTransferApp
                 {
                     fileSizeMB = parsedSize;
                 }
-                if (args[i] == "-savelog")
+                if (args[i] == "--savelog")
                 {
                     isRecordLog = true;
                 }
@@ -41,7 +41,7 @@ namespace FileTransferApp
 
             var logText = "";
             // ファイル転送の実行
-            logText = await FileTransferUtility.TransferAndLog(sharePath, logFilePath, fileSizeMB);
+            logText = await FileTransfer.TransferMeasurement(sharePath, logFilePath, fileSizeMB);
 
             if (isRecordLog)
             {
