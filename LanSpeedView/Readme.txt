@@ -42,6 +42,12 @@ defaultFileSizeMB ... Default CopiedFile Size
 loopCount ... Number of Loop Times
 
 ■改版履歴
+◎Ver.0.06 (2024/12/8) techmsy
+
+  ログの書式を変更した。
+  平均速度、最も速い、最も遅いでそれぞれ1行で表現するようにした。
+  計測速度を小数第2位切り捨て、小数第1位表示にした。
+  経過時間を小数第3位切り上げ、小数第2位表示にした。
 
 ◎Ver.0.05 (2024/9/1) techmsy
 

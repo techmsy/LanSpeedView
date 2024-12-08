@@ -1,18 +1,17 @@
 using System.Diagnostics;
 using System.Configuration;
 using System.Net;
-using System.Threading.Tasks;
 
 public static class FileTransfer
 {
-     private const int spaceCount = 15;  // スペース長さ
+     private const int _numOfSpaceChars = 15;  // スペース長さ
     public static async Task<string> TransferMeasurement(string sharePath, string logFilePath, int fileSizeMB)
     {
         byte[] data = new byte[fileSizeMB * 1024 * 1024];
         new Random().NextBytes(data);
 
         double ulTimeSecTotal = 0, ulTimeSecMax = 0, ulTimeSecMin = 0; // UpLoad(Read)
-        double dlTimeSecTotal = 0, dlTimeSecMax = 0, dlTimeSecMin = 0; // Download(Write)
+        double dnTimeSecTotal = 0, dnTimeSecMax = 0, dnTimeSecMin = 0; // Download(Write)
 
         string remoteFilePath = Path.Combine(sharePath, Path.GetFileName(Path.GetTempFileName()));
         string currentPath = Directory.GetCurrentDirectory();
@@ -34,7 +33,7 @@ public static class FileTransfer
             }
             else
             {
-                var spc = new string(' ', spaceCount);
+                var spc = new string(' ', _numOfSpaceChars);
                 adr = adr + Environment.NewLine + spc + address.ToString();
             }
             idx++;
@@ -87,34 +86,35 @@ public static class FileTransfer
                 }
                 stopwatch.Stop();
                 sw = stopwatch.Elapsed.TotalSeconds;
-                dlTimeSecTotal += sw;
-                if (sw > dlTimeSecMax) dlTimeSecMax = sw;
-                if (i == 1) dlTimeSecMin = sw;
-                if (sw < dlTimeSecMin) dlTimeSecMin = sw;
+                dnTimeSecTotal += sw;
+                if (sw > dnTimeSecMax) dnTimeSecMax = sw;
+                if (i == 1) dnTimeSecMin = sw;
+                if (sw < dnTimeSecMin) dnTimeSecMin = sw;
             }
             
-            double fileSizeBits = fileSizeMB * 8; // 定数計算のキャッシュ
-            double ulTimeSecAve = GetRoundHalf(ulTimeSecTotal / loopCount, 2);
-            double dlTimeSecAve = GetRoundHalf(dlTimeSecTotal / loopCount, 2);
-            double ulSpeedMbpsAve = GetSpeed(fileSizeBits, ulTimeSecAve);
-            double ulSpeedMbpsMax = GetSpeed(fileSizeBits, ulTimeSecMin); // 最速求めには最小の時間
-            double ulSpeedMbpsMin = GetSpeed(fileSizeBits, ulTimeSecMax); // 最遅求めには最大の時間
-            double dlSpeedMbpsAve = GetSpeed(fileSizeBits, dlTimeSecAve);
-            double dlSpeedMbpsMax = GetSpeed(fileSizeBits, dlTimeSecMin); // 最速求めには最小の時間
-            double dlSpeedMbpsMin = GetSpeed(fileSizeBits, dlTimeSecMax); // 最遅求めには最大の時間
+            double ulTimeSecAve = ulTimeSecTotal / loopCount; // アップロード平均時間sec
+            double dnTimeSecAve = dnTimeSecTotal / loopCount; // ダウンロード平均時間sec
 
-            var results = $"\n" +
-                            $"平均速度：\n" +
-                            $"(↓) {dlSpeedMbpsAve} Mbps  {dlTimeSecAve} Sec\n" +
-                            $"(↑) {ulSpeedMbpsAve} Mbps  {ulTimeSecAve} Sec\n" +
-                            $"\n最も速い：\n" +
-                            $"(↓) {dlSpeedMbpsMax} Mbps  {dlTimeSecMin} Sec\n" +
-                            $"(↑) {ulSpeedMbpsMax} Mbps  {ulTimeSecMin} Sec\n" +
-                            $"\n最も遅い：\n" +
-                            $"(↓) {dlSpeedMbpsMin} Mbps  {dlTimeSecMax} Sec\n" +
-                            $"(↑) {ulSpeedMbpsMin} Mbps  {ulTimeSecMax} Sec\n";
+            double fileSizeBits = fileSizeMB * 8; // 単位をMBをBitに変換
+            double ulSpeedMbpsAve = GetSpeed(fileSizeBits, ulTimeSecAve);
+            double ulSpeedMbpsMax = GetSpeed(fileSizeBits, ulTimeSecMin); // 最速求めは最小の時間で割る[2]
+            double ulSpeedMbpsMin = GetSpeed(fileSizeBits, ulTimeSecMax); // 最遅求めは最大の時間で割る[3]
+            double dnSpeedMbpsAve = GetSpeed(fileSizeBits, dnTimeSecAve);
+            double dnSpeedMbpsMax = GetSpeed(fileSizeBits, dnTimeSecMin); // [2]
+            double dnSpeedMbpsMin = GetSpeed(fileSizeBits, dnTimeSecMax); // [3]
+
+            var results = $"平均速度：" +
+                        $"(↓) {dnSpeedMbpsAve.ToString("F1")} Mbps  {GetRoundCeiling(dnTimeSecAve, 3).ToString("F2")} Sec  " +
+                        $"(↑) {ulSpeedMbpsAve.ToString("F1")} Mbps  {GetRoundCeiling(ulTimeSecAve, 3).ToString("F2")} Sec\n" +
+                        $"最も速い：" +
+                        $"(↓) {dnSpeedMbpsMax.ToString("F1")} Mbps  {GetRoundCeiling(dnTimeSecMin, 3).ToString("F2")} Sec  " +
+                        $"(↑) {ulSpeedMbpsMax.ToString("F1")} Mbps  {GetRoundCeiling(ulTimeSecMin, 3).ToString("F2")} Sec\n" +
+                        $"最も遅い：" +
+                        $"(↓) {dnSpeedMbpsMin.ToString("F1")} Mbps  {GetRoundCeiling(dnTimeSecMax, 3).ToString("F2")} Sec  " +
+                        $"(↑) {ulSpeedMbpsMin.ToString("F1")} Mbps  {GetRoundCeiling(ulTimeSecMax, 3).ToString("F2")} Sec\n";
 
             Console.Write($"{results}");
+            Console.WriteLine($"\n");
             Console.WriteLine($"--------------------------------------------------");
             Console.WriteLine($"Process End: {DateTime.Now}\n");
 
@@ -133,19 +133,49 @@ public static class FileTransfer
             }
         }
     }
-    // 四捨五入 (おそらく銀行丸め)
-    public static double GetRoundHalf(double value, int decimals)
+
+    // Mbpsを計算
+    private static double GetSpeed(double fileSizeBits, double timeInSeconds)
+    {
+        return GetRoundFloor(fileSizeBits / timeInSeconds, 1);
+    }
+
+/// <summary>
+/// 指定した小数点以下の桁数で切り捨て処理を行います
+/// </summary>
+/// <param name="value">対象の数値</param>
+/// <param name="decimals">切り捨て処理を適用する小数点以下の桁数</param>
+/// <returns>小数点以下が指定された桁数で切り捨てられた数値</returns>
+/// <exception cref="ArgumentOutOfRangeException">
+/// <paramref name="decimals"/> が 0 未満の場合にスローされます
+/// </exception>
+    public static double GetRoundFloor(double value, int decimals)
     {
         if (decimals < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(decimals), "Decimals cannot be negative.");
         }
-        return Math.Round(value, decimals);
+        double factor = Math.Pow(10, decimals); // 10の指定された桁数倍
+        return Math.Floor(value * factor) / factor; // 切り捨てて戻す
     }
 
-    // Mbpsを計算
-    private static double GetSpeed(double fileSizeBits, double timeInSeconds)
+/// <summary>
+/// 指定した小数点以下の桁数で切り上げ処理を行います
+/// </summary>
+/// <param name="value">対象の数値</param>
+/// <param name="decimals">切り上げ処理を適用する小数点以下の桁数</param>
+/// <returns>小数点以下が指定された桁数で切り上げられた数値</returns>
+/// <exception cref="ArgumentOutOfRangeException">
+/// <paramref name="decimals"/> が 0 未満の場合にスローされます
+/// </exception>
+    public static double GetRoundCeiling(double value, int decimals)
     {
-        return GetRoundHalf(fileSizeBits / timeInSeconds, 1);
+        if (decimals < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(decimals), "Decimals cannot be negative.");
+        }
+
+        double factor = Math.Pow(10, decimals);  // 10の指定された桁数倍
+        return Math.Ceiling(value * factor) / factor;  // 切り上げて戻す
     }
 }
