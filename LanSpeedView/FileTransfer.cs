@@ -41,7 +41,7 @@ public static class FileTransfer
 
         try
         {
-            var overview = $"--------------------------------------------------\n" +
+            var overview = $"\n" +
                             $"Date         : {DateTime.Now}\n" +
                             $"Host Name    : {hostname}\n" +
                             $"IP Address   : {adr}\n" +
@@ -111,11 +111,10 @@ public static class FileTransfer
                         $"(↑) {ulSpeedMbpsMax.ToString("F1")} Mbps  {GetRoundCeiling(ulTimeSecMin, 3).ToString("F2")} Sec\n" +
                         $"最も遅い：" +
                         $"(↓) {dnSpeedMbpsMin.ToString("F1")} Mbps  {GetRoundCeiling(dnTimeSecMax, 3).ToString("F2")} Sec  " +
-                        $"(↑) {ulSpeedMbpsMin.ToString("F1")} Mbps  {GetRoundCeiling(ulTimeSecMax, 3).ToString("F2")} Sec\n";
+                        $"(↑) {ulSpeedMbpsMin.ToString("F1")} Mbps  {GetRoundCeiling(ulTimeSecMax, 3).ToString("F2")} Sec\n" +
+                        $"--------------------------------------------------\n";
 
             Console.Write($"{results}");
-            Console.WriteLine($"\n");
-            Console.WriteLine($"--------------------------------------------------");
             Console.WriteLine($"Process End: {DateTime.Now}\n");
 
             return overview + results;

@@ -19,7 +19,6 @@ namespace FileTransferApp
                 return;
             }
 
-            string sharePath = args[0];
             // ファイルサイズデフォルト取得
             bool result = int.TryParse(ConfigurationManager.AppSettings["defaultFileSizeMB"], out int fileSizeMB);
             if (!result) return;
@@ -39,16 +38,14 @@ namespace FileTransferApp
             // 設定ファイルからログファイル名取得
             string logFilePath = ConfigurationManager.AppSettings["logFilePath"] ?? "log.txt";
 
-            var logText = "";
             // ファイル転送の実行
-            logText = await FileTransfer.TransferMeasurement(sharePath, logFilePath, fileSizeMB);
+            string sharePath = args[0];
+            var logText = await FileTransfer.TransferMeasurement(sharePath, logFilePath, fileSizeMB);
 
             if (isRecordLog)
             {
-                // ログ書き出し
-                Logger.LogTransferResult(logFilePath, logText);
+                Logger.LogTransferResult(logFilePath, logText); // ログ書き出し
             }
-
             // ユーザー応答待機
             // Console.WriteLine("Press any key to exit...");
             // Console.ReadKey();
